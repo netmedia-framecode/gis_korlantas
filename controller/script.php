@@ -14,7 +14,7 @@ $name_website = "GIS Korlantas";
 $select_auth = "SELECT * FROM auth";
 $views_auth = mysqli_query($conn, $select_auth);
 
-$select_laka = "SELECT laka.*, informasi_khusus.informasi_khusus, kondisi_cahaya.kondisi_cahaya, cuaca.kondisi, tingkat_kecelakaan.tingkat_kecelakaan, kecelakaan_menonjol.kecelakaan_menonjol, fungsi_jalan.fungsi_jalan, kelas_jalan.kelas_jalan, tipe_jalan.tipe_jalan, permukaan_jalan.permukaan_jalan, kemiringan_jalan.kemiringan_jalan, status_jalan.status_jalan, polres.nama_polres, polres.alamat, polres.telepon, polres.email, polres.jumlah_anggota
+$select_laka = "SELECT laka.*, informasi_khusus.informasi_khusus, kondisi_cahaya.kondisi_cahaya, cuaca.kondisi, tingkat_kecelakaan.tingkat_kecelakaan, kecelakaan_menonjol.kecelakaan_menonjol, fungsi_jalan.fungsi_jalan, kelas_jalan.kelas_jalan, tipe_jalan.tipe_jalan, permukaan_jalan.permukaan_jalan, kemiringan_jalan.kemiringan_jalan, status_jalan.status_jalan, polres.nama_polres, polres.alamat, polres.telepon, polres.email, polres.jumlah_anggota, titik_rawan.nama_jalan_rawan
 FROM laka
 JOIN informasi_khusus ON laka.id_informasi_khusus=informasi_khusus.id_informasi_khusus
 JOIN kondisi_cahaya ON laka.id_kondisi_cahaya=kondisi_cahaya.id_kondisi_cahaya
@@ -28,10 +28,24 @@ JOIN permukaan_jalan ON laka.id_permukaan_jalan=permukaan_jalan.id_permukaan_jal
 JOIN kemiringan_jalan ON laka.id_kemiringan_jalan=kemiringan_jalan.id_kemiringan_jalan
 JOIN status_jalan ON laka.id_status_jalan=status_jalan.id_status_jalan
 JOIN polres ON laka.id_polres=polres.id_polres
+JOIN titik_rawan ON laka.id_titik_rawan=titik_rawan.id_titik_rawan
 ";
 $views_laka = mysqli_query($conn, $select_laka);
 $select_polres = "SELECT * FROM polres";
 $views_polres = mysqli_query($conn, $select_polres);
+$select_titik_rawan_maps_details = "SELECT titik_rawan.* FROM titik_rawan JOIN laka ON laka.id_titik_rawan=titik_rawan.id_titik_rawan";
+$views_titik_rawan_maps_details = mysqli_query($conn, $select_titik_rawan_maps_details);
+$select_titik_rawan_maps = "SELECT * FROM titik_rawan";
+$views_titik_rawan_maps = mysqli_query($conn, $select_titik_rawan_maps);
+$select_titik_rawan_overview = "SELECT titik_rawan.*, SUM(laka.jumlah_luka_ringan) AS total_jumlah_luka_ringan, SUM(laka.jumlah_luka_berat) AS total_jumlah_luka_berat, SUM(laka.jumlah_meninggal) AS total_jumlah_meninggal, COUNT(laka.id_laka) AS total_laka
+                                  FROM titik_rawan
+                                  LEFT JOIN laka ON laka.id_titik_rawan = titik_rawan.id_titik_rawan
+                                  GROUP BY titik_rawan.id_titik_rawan";
+$views_titik_rawan_overview = mysqli_query($conn, $select_titik_rawan_overview);
+$select_titik_rawan = "SELECT * FROM titik_rawan";
+$views_titik_rawan = mysqli_query($conn, $select_titik_rawan);
+$select_tingkat_kecelakaan = "SELECT * FROM tingkat_kecelakaan";
+$views_tingkat_kecelakaan = mysqli_query($conn, $select_tingkat_kecelakaan);
 
 if (isset($_POST['pencarian_kecelakaan'])) {
   $nama_jalan = valid($conn, $_POST['keyword']);
@@ -135,6 +149,9 @@ if (isset($_SESSION["project_gis_korlantas"]["users"])) {
   $count_laka = "SELECT * FROM laka";
   $count_laka = mysqli_query($conn, $count_laka);
   $counts_laka = mysqli_num_rows($count_laka);
+  $count_titik_rawan = "SELECT * FROM titik_rawan";
+  $count_titik_rawan = mysqli_query($conn, $count_titik_rawan);
+  $counts_titik_rawan = mysqli_num_rows($count_titik_rawan);
 
   $select_profile = "SELECT users.*, user_role.role, user_status.status 
                       FROM users
@@ -490,8 +507,6 @@ if (isset($_SESSION["project_gis_korlantas"]["users"])) {
     }
   }
 
-  $select_tingkat_kecelakaan = "SELECT * FROM tingkat_kecelakaan";
-  $views_tingkat_kecelakaan = mysqli_query($conn, $select_tingkat_kecelakaan);
   if (isset($_POST["add_tingkat_kecelakaan"])) {
     $validated_post = array_map(function ($value) use ($conn) {
       return valid($conn, $value);
@@ -917,6 +932,43 @@ if (isset($_SESSION["project_gis_korlantas"]["users"])) {
       $message_type = "success";
       alert($message, $message_type);
       header("Location: data-pemetaan");
+      exit();
+    }
+  }
+
+  if (isset($_POST["add_titik_rawan"])) {
+    $validated_post = array_map(function ($value) use ($conn) {
+      return valid($conn, $value);
+    }, $_POST);
+    if (titik_rawan($conn, $validated_post, $action = 'insert') > 0) {
+      $message = "Data titik rawan kecelakaan berhasil ditambahkan.";
+      $message_type = "success";
+      alert($message, $message_type);
+      header("Location: titik-rawan");
+      exit();
+    }
+  }
+  if (isset($_POST["edit_titik_rawan"])) {
+    $validated_post = array_map(function ($value) use ($conn) {
+      return valid($conn, $value);
+    }, $_POST);
+    if (titik_rawan($conn, $validated_post, $action = 'update') > 0) {
+      $message = "Data titik rawan kecelakaan yang anda masukan berhasil diubah.";
+      $message_type = "success";
+      alert($message, $message_type);
+      header("Location: titik-rawan");
+      exit();
+    }
+  }
+  if (isset($_POST["delete_titik_rawan"])) {
+    $validated_post = array_map(function ($value) use ($conn) {
+      return valid($conn, $value);
+    }, $_POST);
+    if (titik_rawan($conn, $validated_post, $action = 'delete') > 0) {
+      $message = "Data titik rawan kecelakaan yang anda masukan berhasil dihapus.";
+      $message_type = "success";
+      alert($message, $message_type);
+      header("Location: titik-rawan");
       exit();
     }
   }

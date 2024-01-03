@@ -34,9 +34,16 @@ require_once("../templates/views_top.php"); ?>
           var lngInput = document.querySelector("[name=longitude]");
           var curLocation = [latitude, longitude];
           map.attributionControl.setPrefix(false);
-          var marker = new L.marker(curLocation, {
+          
+          // Menggunakan icon bawaan Leaflet
+          var marker = L.marker(curLocation, {
             draggable: 'true',
+            icon: L.icon({
+              iconUrl: '../assets/img/warning.png',
+              iconSize: [35, 40]
+            })
           });
+
           marker.on('dragend', function(event) {
             var position = marker.getLatLng();
             marker.setLatLng(position, {
@@ -45,6 +52,7 @@ require_once("../templates/views_top.php"); ?>
             latInput.value = position.lat;
             lngInput.value = position.lng;
           });
+          
           map.addLayer(marker);
 
           map.on("click", function(e) {

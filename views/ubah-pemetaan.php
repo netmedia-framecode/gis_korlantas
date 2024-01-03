@@ -44,9 +44,16 @@ $data = mysqli_fetch_assoc($edit_laka);
           var lngInput = document.querySelector("[name=longitude]");
           var curLocation = [latitude, longitude];
           map.attributionControl.setPrefix(false);
-          var marker = new L.marker(curLocation, {
+
+          // Menggunakan icon bawaan Leaflet
+          var marker = L.marker(curLocation, {
             draggable: 'true',
+            icon: L.icon({
+              iconUrl: '../assets/img/warning.png',
+              iconSize: [35, 40]
+            })
           });
+
           marker.on('dragend', function(event) {
             var position = marker.getLatLng();
             marker.setLatLng(position, {
@@ -55,6 +62,7 @@ $data = mysqli_fetch_assoc($edit_laka);
             latInput.value = position.lat;
             lngInput.value = position.lng;
           });
+
           map.addLayer(marker);
 
           map.on("click", function(e) {
@@ -256,8 +264,15 @@ $data = mysqli_fetch_assoc($edit_laka);
               <small>Contoh: tabrakan depan - belakang, tabrakan saat menyalip dari kanan, rem blong atau lainnya</small>
             </div>
             <div class="form-group">
-              <label for="nama_jalan">Nama Jalan</label>
-              <input type="text" name="nama_jalan" value="<?= $data['nama_jalan'] ?>" class="form-control" id="nama_jalan" placeholder="" required>
+              <label for="id_titik_rawan">Nama Jalan</label>
+              <select name="id_titik_rawan" class="form-control" id="id_titik_rawan" required>
+                <option value="" selected>Pilih Nama Jalan</option>
+                <?php $id_titik_rawan = $data['id_titik_rawan'];
+                foreach ($views_titik_rawan as $data_select_titik_rawan) {
+                  $selected = ($data_select_titik_rawan['id_titik_rawan'] == $id_titik_rawan) ? 'selected' : ''; ?>
+                  <option value="<?= $data_select_titik_rawan['id_titik_rawan'] ?>" <?= $selected ?>><?= $data_select_titik_rawan['nama_jalan_rawan'] ?></option>
+                <?php } ?>
+              </select>
             </div>
             <div class="form-group">
               <label for="batas_kecepatan_dilokasi">Batas Kecepatan Dilokasi</label>

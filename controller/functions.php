@@ -1439,6 +1439,7 @@ if (isset($_SESSION["project_gis_korlantas"]["users"])) {
         id_kemiringan_jalan,
         id_status_jalan,
         id_polres,
+        id_titik_rawan,
         no_laka,
         tanggal_kejadian,
         jumlah_meninggal,
@@ -1468,6 +1469,7 @@ if (isset($_SESSION["project_gis_korlantas"]["users"])) {
         '$data[id_kemiringan_jalan]',
         '$data[id_status_jalan]',
         '$data[id_polres]',
+        '$data[id_titik_rawan]',
         '$data[no_laka]',
         '$data[tanggal_kejadian]',
         '$data[jumlah_meninggal]',
@@ -1477,7 +1479,6 @@ if (isset($_SESSION["project_gis_korlantas"]["users"])) {
         '$data[longitude]',
         '$data[titik_acuan]',
         '$data[tipe_kecelakaan]',
-        '$data[nama_jalan]',
         '$data[batas_kecepatan_dilokasi]',
         '$data[nilai_kerugian_non_kendaraan]',
         '$data[nilai_kerugian_kendaraan]',
@@ -1521,12 +1522,92 @@ if (isset($_SESSION["project_gis_korlantas"]["users"])) {
       } else if (empty($_FILE['img_laka']["name"])) {
         $img_laka = $data['img_lakaOld'];
       }
-      $sql = "UPDATE laka SET id_informasi_khusus='$data[id_informasi_khusus]', id_kondisi_cahaya='$data[id_kondisi_cahaya]', id_cuaca='$data[id_cuaca]', id_tingkat_kecelakaan='$data[id_tingkat_kecelakaan]', id_kecelakaan_menonjol='$data[id_kecelakaan_menonjol]', id_fungsi_jalan='$data[id_fungsi_jalan]', id_kelas_jalan='$data[id_kelas_jalan]', id_tipe_jalan='$data[id_tipe_jalan]', id_permukaan_jalan='$data[id_permukaan_jalan]', id_kemiringan_jalan='$data[id_kemiringan_jalan]', id_status_jalan='$data[id_status_jalan]', id_polres='$data[id_polres]', no_laka='$data[no_laka]', tanggal_kejadian='$data[tanggal_kejadian]', jumlah_meninggal='$data[jumlah_meninggal]', jumlah_luka_berat='$data[jumlah_luka_berat]', jumlah_luka_ringan='$data[jumlah_luka_ringan]', latitude='$data[latitude]', longitude='$data[longitude]', titik_acuan='$data[titik_acuan]', tipe_kecelakaan='$data[tipe_kecelakaan]', nama_jalan='$data[nama_jalan]', batas_kecepatan_dilokasi='$data[batas_kecepatan_dilokasi]', nilai_kerugian_non_kendaraan='$data[nilai_kerugian_non_kendaraan]', nilai_kerugian_kendaraan='$data[nilai_kerugian_kendaraan]', keterangan_kerugian='$data[keterangan_kerugian]', jam_kejadian='$data[jam_kejadian]', img_laka='$img_laka' WHERE id_laka='$data[id_laka]'";
+      $sql = "UPDATE laka SET id_informasi_khusus='$data[id_informasi_khusus]', id_kondisi_cahaya='$data[id_kondisi_cahaya]', id_cuaca='$data[id_cuaca]', id_tingkat_kecelakaan='$data[id_tingkat_kecelakaan]', id_kecelakaan_menonjol='$data[id_kecelakaan_menonjol]', id_fungsi_jalan='$data[id_fungsi_jalan]', id_kelas_jalan='$data[id_kelas_jalan]', id_tipe_jalan='$data[id_tipe_jalan]', id_permukaan_jalan='$data[id_permukaan_jalan]', id_kemiringan_jalan='$data[id_kemiringan_jalan]', id_status_jalan='$data[id_status_jalan]', id_polres='$data[id_polres]', no_laka='$data[no_laka]', tanggal_kejadian='$data[tanggal_kejadian]', jumlah_meninggal='$data[jumlah_meninggal]', jumlah_luka_berat='$data[jumlah_luka_berat]', jumlah_luka_ringan='$data[jumlah_luka_ringan]', latitude='$data[latitude]', longitude='$data[longitude]', titik_acuan='$data[titik_acuan]', tipe_kecelakaan='$data[tipe_kecelakaan]', id_titik_rawan='$data[id_titik_rawan]', batas_kecepatan_dilokasi='$data[batas_kecepatan_dilokasi]', nilai_kerugian_non_kendaraan='$data[nilai_kerugian_non_kendaraan]', nilai_kerugian_kendaraan='$data[nilai_kerugian_kendaraan]', keterangan_kerugian='$data[keterangan_kerugian]', jam_kejadian='$data[jam_kejadian]', img_laka='$img_laka' WHERE id_laka='$data[id_laka]'";
     }
 
     if ($action == "delete") {
       unlink($path . $data['img_laka']);
       $sql = "DELETE FROM laka WHERE id_laka='$data[id_laka]'";
+    }
+
+    mysqli_query($conn, $sql);
+    return mysqli_affected_rows($conn);
+  }
+
+  function titik_rawan($conn, $data, $action)
+  {
+    $path = "../assets/img/titik_rawan/";
+
+    if ($action == "insert") {
+      $select_titik_rawan = "SELECT * FROM titik_rawan WHERE nama_jalan_rawan='$data[nama_jalan_rawan]'";
+      $take_titik_rawan = mysqli_query($conn, $select_titik_rawan);
+      if (mysqli_num_rows($take_titik_rawan) > 0) {
+        $message = "Maaf, nama jalan yang anda masukan sudah ada.";
+        $message_type = "danger";
+        alert($message, $message_type);
+        return false;
+      }
+      $fileName = basename($_FILES["img_titik_rawan"]["name"]);
+      $fileName = str_replace(" ", "-", $fileName);
+      $fileName_encrypt = crc32($fileName);
+      $ekstensiGambar = explode('.', $fileName);
+      $ekstensiGambar = strtolower(end($ekstensiGambar));
+      $imageUploadPath = $path . $fileName_encrypt . "." . $ekstensiGambar;
+      $fileType = pathinfo($imageUploadPath, PATHINFO_EXTENSION);
+      $allowTypes = array('jpg', 'png', 'jpeg');
+      if (in_array($fileType, $allowTypes)) {
+        $imageTemp = $_FILES["img_titik_rawan"]["tmp_name"];
+        compressImage($imageTemp, $imageUploadPath, 75);
+        $img_titik_rawan = $fileName_encrypt . "." . $ekstensiGambar;
+      } else {
+        $message = "Maaf, hanya file gambar JPG, JPEG, dan PNG yang diizinkan.";
+        $message_type = "danger";
+        alert($message, $message_type);
+        return false;
+      }
+      $sql = "INSERT INTO titik_rawan(img_titik_rawan,nama_jalan_rawan,latitude,longitude) VALUES('$img_titik_rawan','$data[nama_jalan_rawan]','$data[latitude]','$data[longitude]')";
+    }
+
+    if ($action == "update") {
+      if ($data['nama_jalan_rawan'] != $data['nama_jalan_rawanOld']) {
+        $select_titik_rawan = "SELECT * FROM titik_rawan WHERE nama_jalan_rawan='$data[nama_jalan_rawan]'";
+        $take_titik_rawan = mysqli_query($conn, $select_titik_rawan);
+        if (mysqli_num_rows($take_titik_rawan) > 0) {
+          $message = "Maaf, nama jalan yang anda masukan sudah ada.";
+          $message_type = "danger";
+          alert($message, $message_type);
+          return false;
+        }
+      }
+      if (!empty($_FILES['img_titik_rawan']["name"])) {
+        $fileName = basename($_FILES["img_titik_rawan"]["name"]);
+        $fileName = str_replace(" ", "-", $fileName);
+        $fileName_encrypt = crc32($fileName);
+        $ekstensiGambar = explode('.', $fileName);
+        $ekstensiGambar = strtolower(end($ekstensiGambar));
+        $imageUploadPath = $path . $fileName_encrypt . "." . $ekstensiGambar;
+        $fileType = pathinfo($imageUploadPath, PATHINFO_EXTENSION);
+        $allowTypes = array('jpg', 'png', 'jpeg');
+        if (in_array($fileType, $allowTypes)) {
+          $imageTemp = $_FILES["img_titik_rawan"]["tmp_name"];
+          compressImage($imageTemp, $imageUploadPath, 75);
+          $img_titik_rawan = $fileName_encrypt . "." . $ekstensiGambar;
+          unlink($path . $data['img_titik_rawanOld']);
+        } else {
+          $message = "Maaf, hanya file gambar JPG, JPEG, dan PNG yang diizinkan.";
+          $message_type = "danger";
+          alert($message, $message_type);
+          return false;
+        }
+      } else if (empty($_FILE['img_titik_rawan']["name"])) {
+        $img_titik_rawan = $data['img_titik_rawanOld'];
+      }
+      $sql = "UPDATE titik_rawan SET img_titik_rawan='$data[img_titik_rawan]', nama_jalan_rawan='$data[nama_jalan_rawan]', latitude='$data[latitude]', longitude='$data[longitude]' WHERE id_titik_rawan='$data[id_titik_rawan]'";
+    }
+
+    if ($action == "delete") {
+      unlink($path . $data['img_titik_rawan']);
+      $sql = "DELETE FROM titik_rawan WHERE id_titik_rawan='$data[id_titik_rawan]'";
     }
 
     mysqli_query($conn, $sql);

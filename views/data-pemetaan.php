@@ -91,14 +91,14 @@ if (isset($_SESSION["project_gis_korlantas"]["id_pemetaan"])) {
                 <td><?= $data['jumlah_meninggal'] ?></td>
                 <td><?= $data['jumlah_luka_berat'] ?></td>
                 <td><?= $data['jumlah_luka_ringan'] ?></td>
-                <td><a href="lokasi?id=<?= $data['id_laka'] ?>&lat=<?= $data['latitude'] ?>&lng=<?= $data['longitude'] ?>">Lihat Lokasi</a></td>
+                <td><a href="lokasi?lat=<?= $data['latitude'] ?>&lng=<?= $data['longitude'] ?>">Lihat Lokasi</a></td>
                 <td><?= $data['titik_acuan'] ?></td>
                 <td><?= $data['informasi_khusus'] ?></td>
                 <td><?= $data['tipe_kecelakaan'] ?></td>
                 <td><?= $data['kondisi_cahaya'] ?></td>
                 <td><?= $data['kondisi'] ?></td>
                 <td><?= $data['kecelakaan_menonjol'] ?></td>
-                <td><?= $data['nama_jalan'] ?></td>
+                <td><?= $data['nama_jalan_rawan'] ?></td>
                 <td><?= $data['fungsi_jalan'] ?></td>
                 <td><?= $data['kelas_jalan'] ?></td>
                 <td><?= $data['tipe_jalan'] ?></td>

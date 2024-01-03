@@ -159,6 +159,7 @@ CREATE TABLE laka (
   id_kemiringan_jalan INT,
   id_status_jalan INT,
   id_polres INT,
+  id_titik_rawan INT,
   FOREIGN KEY (id_informasi_khusus) REFERENCES informasi_khusus(id_informasi_khusus) ON UPDATE CASCADE ON DELETE NO ACTION,
   FOREIGN KEY (id_kondisi_cahaya) REFERENCES kondisi_cahaya(id_kondisi_cahaya) ON UPDATE CASCADE ON DELETE NO ACTION,
   FOREIGN KEY (id_cuaca) REFERENCES cuaca(id_cuaca) ON UPDATE CASCADE ON DELETE NO ACTION,
@@ -171,6 +172,7 @@ CREATE TABLE laka (
   FOREIGN KEY (id_kemiringan_jalan) REFERENCES kemiringan_jalan(id_kemiringan_jalan) ON UPDATE CASCADE ON DELETE NO ACTION,
   FOREIGN KEY (id_status_jalan) REFERENCES status_jalan(id_status_jalan) ON UPDATE CASCADE ON DELETE NO ACTION,
   FOREIGN KEY (id_polres) REFERENCES polres(id_polres) ON UPDATE CASCADE ON DELETE CASCADE,
+  FOREIGN KEY (id_titik_rawan) REFERENCES titik_rawan(id_titik_rawan) ON UPDATE CASCADE ON DELETE CASCADE,
   no_laka VARCHAR(75),
   tanggal_kejadian DATE,
   jumlah_meninggal INT,
@@ -180,10 +182,19 @@ CREATE TABLE laka (
   longitude VARCHAR(50),
   titik_acuan VARCHAR(100),
   tipe_kecelakaan TEXT,
-  nama_jalan VARCHAR(255),
   batas_kecepatan_dilokasi INT,
   nilai_kerugian_non_kendaraan INT,
   nilai_kerugian_kendaraan INT,
-  keterangan_kerugian TEXT
+  keterangan_kerugian TEXT 
   jam_kejadian TIME,
+  img_laka VARCHAR(50),
+  id_titik_rawan INT
+);
+
+CREATE TABLE titik_rawan(
+  id_titik_rawan INT AUTO_INCREMENT PRIMARY KEY,
+  img_titik_rawan VARCHAR(50),
+  nama_jalan_rawan VARCHAR(100),
+  latitude VARCHAR(50),
+  longitude VARCHAR(50)
 );

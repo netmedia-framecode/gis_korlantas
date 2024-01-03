@@ -34,9 +34,16 @@ require_once("../templates/views_top.php"); ?>
           var lngInput = document.querySelector("[name=longitude]");
           var curLocation = [latitude, longitude];
           map.attributionControl.setPrefix(false);
-          var marker = new L.marker(curLocation, {
+
+          // Menggunakan icon bawaan Leaflet
+          var marker = L.marker(curLocation, {
             draggable: 'true',
+            icon: L.icon({
+              iconUrl: '../assets/img/warning.png',
+              iconSize: [35, 40]
+            })
           });
+
           marker.on('dragend', function(event) {
             var position = marker.getLatLng();
             marker.setLatLng(position, {
@@ -45,6 +52,7 @@ require_once("../templates/views_top.php"); ?>
             latInput.value = position.lat;
             lngInput.value = position.lng;
           });
+
           map.addLayer(marker);
 
           map.on("click", function(e) {
@@ -336,10 +344,21 @@ require_once("../templates/views_top.php"); ?>
               <small>Contoh: tabrakan depan - belakang, tabrakan saat menyalip dari kanan, rem blong atau lainnya</small>
             </div>
             <div class="form-group">
-              <label for="nama_jalan">Nama Jalan</label>
-              <input type="text" name="nama_jalan" value="<?php if (isset($_POST['nama_jalan'])) {
-                                                            echo $_POST['nama_jalan'];
-                                                          } ?>" class="form-control" id="nama_jalan" placeholder="" required>
+              <label for="id_titik_rawan">Nama Jalan</label>
+              <select name="id_titik_rawan" class="form-control" id="id_titik_rawan" required>
+                <option value="" selected>Pilih Nama Jalan</option>
+                <?php if (isset($_POST['nama_jalan_rawan'])) {
+                  $nama_jalan_rawan = $_POST['nama_jalan_rawan'];
+                  foreach ($views_titik_rawan as $data_select_titik_rawan) {
+                    $selected = ($data_select_titik_rawan['nama_jalan_rawan'] == $nama_jalan_rawan) ? 'selected' : ''; ?>
+                    <option value="<?= $data_select_titik_rawan['id_titik_rawan'] ?>" <?= $selected ?>><?= $data_select_titik_rawan['nama_jalan_rawan'] ?></option>
+                  <?php }
+                } else {
+                  foreach ($views_titik_rawan as $data_select_titik_rawan) { ?>
+                    <option value="<?= $data_select_titik_rawan['id_titik_rawan'] ?>"><?= $data_select_titik_rawan['nama_jalan_rawan'] ?></option>
+                <?php }
+                } ?>
+              </select>
             </div>
             <div class="form-group">
               <label for="batas_kecepatan_dilokasi">Batas Kecepatan Dilokasi</label>
