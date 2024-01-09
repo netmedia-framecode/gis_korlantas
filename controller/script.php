@@ -31,7 +31,7 @@ JOIN polres ON laka.id_polres=polres.id_polres
 JOIN titik_rawan ON laka.id_titik_rawan=titik_rawan.id_titik_rawan
 ";
 $views_laka = mysqli_query($conn, $select_laka);
-$select_polres = "SELECT * FROM polres";
+$select_polres = "SELECT * FROM polres JOIN laka ON polres.id_polres=laka.id_polres JOIN titik_rawan ON laka.id_titik_rawan=titik_rawan.id_titik_rawan GROUP BY polres.id_polres";
 $views_polres = mysqli_query($conn, $select_polres);
 $select_titik_rawan_maps_details = "SELECT titik_rawan.* FROM titik_rawan JOIN laka ON laka.id_titik_rawan=titik_rawan.id_titik_rawan";
 $views_titik_rawan_maps_details = mysqli_query($conn, $select_titik_rawan_maps_details);
