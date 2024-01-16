@@ -81,3 +81,7 @@ $('.custom-file-input').on('change', function() {
   $(this).next('.custom-file-label').addClass("selected").html(fileName);
 });
 </script>
+
+<script>
+  CKEDITOR.replace('deskripsi');
+</script>

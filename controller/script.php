@@ -9,7 +9,7 @@ require_once("functions.php");
 $messageTypes = ["success", "info", "warning", "danger", "dark"];
 
 $baseURL = "http://$_SERVER[HTTP_HOST]/apps/tugas/gis_korlantas/";
-$name_website = "GIS Korlantas";
+$name_website = "Digital Satlantas Kota Kupang";
 
 $select_auth = "SELECT * FROM auth";
 $views_auth = mysqli_query($conn, $select_auth);
@@ -37,21 +37,41 @@ $select_titik_rawan_maps_details = "SELECT titik_rawan.* FROM titik_rawan JOIN l
 $views_titik_rawan_maps_details = mysqli_query($conn, $select_titik_rawan_maps_details);
 $select_titik_rawan_maps = "SELECT * FROM titik_rawan";
 $views_titik_rawan_maps = mysqli_query($conn, $select_titik_rawan_maps);
-$select_titik_rawan_overview = "SELECT titik_rawan.*, SUM(laka.jumlah_luka_ringan) AS total_jumlah_luka_ringan, SUM(laka.jumlah_luka_berat) AS total_jumlah_luka_berat, SUM(laka.jumlah_meninggal) AS total_jumlah_meninggal, COUNT(laka.id_laka) AS total_laka
+$select_titik_rawan_overview = "SELECT titik_rawan.*, SUM(laka.jumlah_luka_ringan) AS total_jumlah_luka_ringan, SUM(laka.jumlah_luka_berat) AS total_jumlah_luka_berat, SUM(laka.jumlah_meninggal) AS total_jumlah_meninggal, COUNT(laka.id_laka) AS total_laka, polres.nama_polres
                                   FROM titik_rawan
                                   LEFT JOIN laka ON laka.id_titik_rawan = titik_rawan.id_titik_rawan
+                                  LEFT JOIN polres ON laka.id_polres = polres.id_polres
                                   GROUP BY titik_rawan.id_titik_rawan";
 $views_titik_rawan_overview = mysqli_query($conn, $select_titik_rawan_overview);
 $select_titik_rawan = "SELECT * FROM titik_rawan";
 $views_titik_rawan = mysqli_query($conn, $select_titik_rawan);
 $select_tingkat_kecelakaan = "SELECT * FROM tingkat_kecelakaan";
 $views_tingkat_kecelakaan = mysqli_query($conn, $select_tingkat_kecelakaan);
+$select_pesan_kapolri = "SELECT * FROM pesan_kapolri";
+$views_pesan_kapolri = mysqli_query($conn, $select_pesan_kapolri);
+$select_sejarah = "SELECT * FROM sejarah";
+$views_sejarah = mysqli_query($conn, $select_sejarah);
+$select_visi_misi = "SELECT * FROM visi_misi";
+$views_visi_misi = mysqli_query($conn, $select_visi_misi);
 
 if (isset($_POST['pencarian_kecelakaan'])) {
   $nama_jalan = valid($conn, $_POST['keyword']);
   $_SESSION["project_gis_korlantas"]["place"] = $nama_jalan;
   header("Location: place");
   exit();
+}
+
+if (isset($_POST["kontak"])) {
+  $validated_post = array_map(function ($value) use ($conn) {
+    return valid($conn, $value);
+  }, $_POST);
+  if (kontak($conn, $validated_post, $action = 'insert') > 0) {
+    $message = "Pesan anda berhasil terkirim.";
+    $message_type = "success";
+    alert($message, $message_type);
+    header("Location: kontak");
+    exit();
+  }
 }
 
 if (!isset($_SESSION["project_gis_korlantas"]["users"])) {
@@ -972,4 +992,46 @@ if (isset($_SESSION["project_gis_korlantas"]["users"])) {
       exit();
     }
   }
+
+  if (isset($_POST["edit_pesan_kapolri"])) {
+    $validated_post = array_map(function ($value) use ($conn) {
+      return valid($conn, $value);
+    }, $_POST);
+    if (pesan_kapolri($conn, $validated_post, $action = 'update', $deskripsi = $_POST['deskripsi']) > 0) {
+      $message = "Data pesan kapolri yang anda masukan berhasil diubah.";
+      $message_type = "success";
+      alert($message, $message_type);
+      header("Location: pesan-kapolri");
+      exit();
+    }
+  }
+
+  if (isset($_POST["edit_sejarah"])) {
+    $validated_post = array_map(function ($value) use ($conn) {
+      return valid($conn, $value);
+    }, $_POST);
+    if (sejarah($conn, $validated_post, $action = 'update', $deskripsi = $_POST['deskripsi']) > 0) {
+      $message = "Data sejarah yang anda masukan berhasil diubah.";
+      $message_type = "success";
+      alert($message, $message_type);
+      header("Location: sejarah");
+      exit();
+    }
+  }
+
+  if (isset($_POST["edit_visi_misi"])) {
+    $validated_post = array_map(function ($value) use ($conn) {
+      return valid($conn, $value);
+    }, $_POST);
+    if (visi_misi($conn, $validated_post, $action = 'update', $deskripsi = $_POST['deskripsi']) > 0) {
+      $message = "Data visi misi yang anda masukan berhasil diubah.";
+      $message_type = "success";
+      alert($message, $message_type);
+      header("Location: visi-misi");
+      exit();
+    }
+  }
+
+  $select_kontak = "SELECT * FROM kontak";
+  $views_kontak = mysqli_query($conn, $select_kontak);
 }

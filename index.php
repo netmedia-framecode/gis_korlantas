@@ -11,167 +11,99 @@ $_SESSION["project_gis_korlantas"]["name_page"] = ""; ?>
 <body>
   <div class="ts-page-wrapper ts-homepage ts-full-screen-page" id="page-top">
     <?php require_once("sections/navbar.php"); ?>
-    <section id="ts-hero" class=" mb-0">
-      <div class="ts-full-screen ts-has-horizontal-results w-1001 d-flex1 flex-column1">
-        <div class="ts-map ts-shadow__sm">
-          <div class="ts-form__map-search ts-z-index__2">
-            <form class="ts-form" method="get" action="place">
-              <a href=".html" data-toggle="collapse" class="ts-center__vertical justify-content-between">
-                <h5 class="mb-0">Pencarian Titik Rawan</h5>
-              </a>
-              <div class="ts-form-collapse ts-xs-hide-collapse collapse show">
-                <div class="form-group my-2 pt-2">
-                  <input type="text" class="form-control" id="address" name="address" placeholder="Nama Jalan">
-                </div>
-                <div class="form-group mt-2 mb-3">
-                  <button type="submit" class="btn btn-primary w-100" id="search-btn">Cari</button>
-                </div>
+    <style>
+      .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        z-index: 0;
+      }
+
+      .ts-hero-img {
+        background-image: url('assets/img/banner.jpeg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        object-fit: cover;
+        height: 100%;
+      }
+    </style>
+    <section id="ts-hero" class="mb-0 ts-hero-img">
+      <div class="overlay"></div>
+      <div class="container py-5">
+        <div class="row ts-center__both ts-h__auto ts-min-h__60vh">
+
+          <div class="col-sm-6 col-md-8 text-white">
+            <!--Title-->
+            <h1 class="mb-2">Digital Satlantas Polres Kupang Kota</h1>
+            <!--Subtitle-->
+            <!--More properties button-->
+            <a href="lakalantas" class="ts-scroll btn-dark btn-sm d-none d-md-inline-block" data-bg-color="rgba(255,255,255,.3)">Lihat Kecelakaan</a>
+          </div>
+
+          <div class="col-sm-6 col-md-4">
+
+            <!--Form-->
+            <form method="post" class="ts-form py-3 px-4 ts-border-radius__md ts-shadow__md" data-bg-color="rgba(255,255,255,.9)">
+
+              <h4 class="mb-3">Cari Titik Kecelakaan</h4>
+
+              <!--Keyword-->
+              <div class="form-group my-2">
+                <input type="text" class="form-control" id="keyword" name="keyword" placeholder="Nama Jalan">
               </div>
+
+              <!--Status-->
+              <select class="custom-select my-2" id="status" name="status">
+                <option value="">Status</option>
+                <?php foreach ($views_tingkat_kecelakaan as $data) : ?>
+                  <option value="<?= $data['id_tingkat_kecelakaan'] ?>"><?= $data['tingkat_kecelakaan'] ?></option>
+                <?php endforeach; ?>
+              </select>
+
+              <!--Submit button-->
+              <div class="form-group my-2">
+                <button type="submit" name="cari-titik-rawan" class="btn btn-primary w-100" id="search-btn"><i class="fas fa-search"></i> Cari</button>
+              </div>
+
             </form>
           </div>
 
-          <div id="map" class="shadow" style="width: 100%; height: 100%;z-index: 0;"></div>
-          <?php $data = array();
-          if ($views_titik_rawan_maps->num_rows > 0) {
-            while ($row = $views_titik_rawan_maps->fetch_assoc()) {
-              $data[] = $row;
-            }
-          } ?>
-          <script>
-            function getlokasi() {
-              if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(showPosition);
-              }
-            }
-
-            function showPosition(posisi) {
-              var latitude = posisi.coords.latitude;
-              var longitude = posisi.coords.longitude;
-
-              var map = L.map('map').setView([latitude, longitude], 14);
-              var tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {}).addTo(map);
-
-              var latInput = document.querySelector("[name=latitude]");
-              var lngInput = document.querySelector("[name=longitude]");
-              var curLocation = [latitude, longitude];
-              map.attributionControl.setPrefix(false);
-
-              // Ikon untuk lokasi saat ini
-              var currentLocationIcon = L.icon({
-                iconUrl: 'assets/img/location.png',
-                iconSize: [35, 40],
-                iconAnchor: [16, 32],
-                popupAnchor: [0, -32],
-              });
-
-              var marker = new L.marker(curLocation, {
-                draggable: 'true',
-                icon: currentLocationIcon,
-              });
-
-              marker.on('dragend', function(event) {
-                var position = marker.getLatLng();
-                marker.setLatLng(position, {
-                  draggable: 'true',
-                }).bindPopup(position).update();
-                latInput.value = position.lat;
-                lngInput.value = position.lng;
-              });
-              map.addLayer(marker);
-
-              map.on("click", function(e) {
-                var lat = e.latlng.lat;
-                var lng = e.latlng.lng;
-                if (!marker) {
-                  marker = L.marker(e.latlng, {
-                    icon: currentLocationIcon
-                  }).addTo(map);
-                } else {
-                  marker.setLatLng(e.latlng);
-                }
-                latInput.value = lat;
-                lngInput.value = lng;
-              });
-
-              // Panggil fungsi untuk menampilkan titik rawan
-              tampilkanTitikRawan(map);
-            }
-
-            function tampilkanTitikRawan(map) {
-              var dataTitikRawan = <?php echo json_encode($data); ?>;
-
-              // Ikon untuk titik rawan
-              var rawanIcon = L.icon({
-                iconUrl: 'assets/img/warning.png',
-                iconSize: [32, 32],
-                iconAnchor: [16, 32],
-                popupAnchor: [0, -32],
-              });
-
-              dataTitikRawan.forEach(titik => {
-                var marker = L.marker([titik.latitude, titik.longitude], {
-                  icon: rawanIcon
-                }).addTo(map);
-                marker.bindPopup('<div style="background-color: white; padding: 10px;"><img src="assets/img/titik_rawan/' + titik.img_titik_rawan + '" style="width: 280px;" alt=""><br><br><b>' + titik.nama_jalan_rawan + '</b></div>');
-              });
-            }
-
-            getlokasi();
-          </script>
-
-        </div>
-
-        <div id="ts-results" class="ts-results__horizontal scrollbar-inner dragscroll">
-          <div class="ts-results-wrapper">
-            <?php foreach ($views_titik_rawan_overview as $data) : ?>
-              <div class="ts-result-link" data-ts-id="1" data-ts-ln="0" style="width: 400px;">
-                <span class="ts-center-marker"><img src="assets/img/titik_rawan/<?= $data['img_titik_rawan'] ?>" style="object-fit: cover;width: 150px;"></span>
-                <a href="laka?id=<?= $data['id_titik_rawan'] ?>&address=<?= $data['nama_jalan_rawan'] ?>" class="card ts-item ts-card ts-result" style="width: 400px;">
-                  <div class="card-img ts-item__image" style="background-image: url(assets/img/titik_rawan/<?= $data['img_titik_rawan'] ?>);object-fit: cover;width: 150px;"></div>
-                  <div class="card-body">
-                    <figure class="ts-item__info">
-                      <h4><i class="fa fa-map-marker mr-2"></i><?= $data['nama_jalan_rawan'] ?></h4>
-                    </figure>
-                    <div class="ts-description-lists">
-                      <dl>
-                        <dt>Jumlah Kecelakaan</dt>
-                        <dd><?= $data['total_laka'] ?></dd>
-                      </dl>
-                      <dl>
-                        <dt>Luka Ringan</dt>
-                        <dd><?= $data['total_jumlah_luka_ringan'] ?></dd>
-                      </dl>
-                      <dl>
-                        <dt>Luka Berat</dt>
-                        <dd><?= $data['total_jumlah_luka_berat'] ?></dd>
-                      </dl>
-                      <dl>
-                        <dt>Meninggal</dt>
-                        <dd><?= $data['total_jumlah_meninggal'] ?></dd>
-                      </dl>
-                    </div>
-                  </div>
-                </a>
-              </div>
-            <?php endforeach; ?>
-          </div>
         </div>
       </div>
     </section>
 
     <main id="ts-main">
 
+      <section id="category-select" class="ts-icons-select ts-icons-select__dark" data-bg-color="#292929">
+        <?php foreach ($views_titik_rawan_overview as $data) {
+          $id_titik_rawan = $data['id_titik_rawan']; ?>
+          <a href="titik-rawan?id=<?= $id_titik_rawan ?>">
+            <aside><?php $take_laka = "SELECT * FROM laka WHERE id_titik_rawan='$id_titik_rawan'";
+                    $take_data_laka = mysqli_query($conn, $take_laka);
+                    echo mysqli_num_rows($take_data_laka); ?></aside>
+            <img src="assets/img/titik_rawan/<?= $data['img_titik_rawan'] ?>" style="width: 75px;" alt="">
+            <figure>
+              <h6><?= $data['nama_jalan_rawan'] ?></h6>
+              <small><?= $data['nama_polres'] ?></small>
+            </figure>
+          </a>
+        <?php } ?>
+      </section>
+
       <section id="featured-properties" class="ts-block pt-5">
         <div class="container">
           <div class="ts-title text-center">
-            <h2>Satlantas Kupang Kota</h2>
+            <h2>List Polres</h2>
           </div>
           <div class="row">
             <?php foreach ($views_polres as $data) : ?>
               <div class="col-sm-6 col-lg-4">
-
                 <div class="card ts-item ts-card ts-item__lg">
-                  <a href="laka?id=<?= $data['id_titik_rawan'] ?>&address=<?= $data['nama_jalan_rawan'] ?>" class="card-img ts-item__image" data-bg-image="assets/img/polres/<?= $data['img_polres'] ?>">
+                  <a href="polres?id=<?= $data['id_polres'] ?>" class="card-img ts-item__image" data-bg-image="assets/img/polres/<?= $data['img_polres'] ?>">
                     <figure class="ts-item__info">
                       <h4><?= $data['nama_polres'] ?></h4>
                       <aside>
@@ -204,40 +136,77 @@ $_SESSION["project_gis_korlantas"]["name_page"] = ""; ?>
                       </dl>
                     </div>
                   </div>
+                  <a href="polres?id=<?= $data['id_polres'] ?>" class="card-footer">
+                    <span class="ts-btn-arrow">Detail</span>
+                  </a>
                 </div>
-                <!--end ts-item-->
               </div>
             <?php endforeach; ?>
+          </div>
+          <div class="text-center mt-3">
+            <a href="polres" class="btn btn-outline-dark ts-btn-border-muted">Lihat Semua Polres</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="latest-listings" class="ts-block">
+        <div class="container">
+          <div class="ts-title">
+            <h2>List Titik Rawan</h2>
+          </div>
+          <div class="row">
+            <?php foreach ($views_titik_rawan_overview as $data) {
+              $id_titik_rawan = $data['id_titik_rawan']; ?>
+              <div class="col-sm-6 col-lg-3">
+                <div class="card ts-item ts-card">
+                  <a href="titik-rawan?id=<?= $id_titik_rawan ?>" class="card-img ts-item__image" data-bg-image="assets/img/titik_rawan/<?= $data['img_titik_rawan'] ?>">
+                    <figure class="ts-item__info">
+                      <h4><i class="fa fa-map-marker mr-2"></i><?= $data['nama_jalan_rawan'] ?></h4>
+                    </figure>
+                  </a>
+                  <div class="card-body">
+                    <div class="ts-description-lists">
+                      <dl>
+                        <dt>Jumlah Kecelakaan</dt>
+                        <dd><?= $data['total_laka'] ?></dd>
+                      </dl>
+                      <dl>
+                        <dt>Luka Ringan</dt>
+                        <dd><?= $data['total_jumlah_luka_ringan'] ?></dd>
+                      </dl>
+                      <dl>
+                        <dt>Luka Berat</dt>
+                        <dd><?= $data['total_jumlah_luka_berat'] ?></dd>
+                      </dl>
+                      <dl>
+                        <dt>Meninggal</dt>
+                        <dd><?= $data['total_jumlah_meninggal'] ?></dd>
+                      </dl>
+                    </div>
+                  </div>
+                  <a href="titik-rawan?id=<?= $id_titik_rawan ?>" class="card-footer">
+                    <span class="ts-btn-arrow">Detail</span>
+                  </a>
+                </div>
+              </div>
+            <?php } ?>
+          </div>
+        </div>
+      </section>
+
+      <section id="submit-banner" class="ts-block">
+        <div class="container">
+          <div class="ts-block-inside text-center ts-separate-bg-element" data-bg-image-opacity=".2" data-bg-image="assets/img/bg-chair.jpg" data-bg-color="#fff">
+            <figure class="h1 font-weight-light mb-2">Anda ingin menghubungi kami?</figure>
+            <p class="mb-5">Silakan klik kontak kami untuk mengirimkan pesan kepada kami.</p>
+            <a href="kontak" class="btn btn-dark">Kontak Kami</a>
           </div>
         </div>
       </section>
 
     </main>
 
-    <footer id="ts-footer">
-      <section id="ts-footer-secondary">
-        <div class="container">
-
-          <!--Copyright-->
-          <div class="ts-copyright">(C) <?= date('Y') ?> Netmedia Framecode, All rights reserved</div>
-
-          <!--Social Icons-->
-          <div class="ts-footer-nav mt-3">
-            <p>Powered by Muhammad Ardy</p>
-          </div>
-          <!--end ts-footer-nav-->
-
-        </div>
-        <!--end container-->
-      </section>
-      <!--end ts-footer-secondary-->
-
-    </footer>
-    <!--end #ts-footer-->
-
-  </div>
-
-  <?php require_once("sections/footer.php"); ?>
+    <?php require_once("sections/footer.php"); ?>
 
 </body>
 

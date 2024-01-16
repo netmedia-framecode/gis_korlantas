@@ -4,10 +4,9 @@
 
   <!-- Sidebar - Brand -->
   <a class="sidebar-brand d-flex align-items-center justify-content-center" href="./">
-    <div class="sidebar-brand-icon rotate-n-15">
-      <i class="bi bi-code-slash"></i>
+    <div class="sidebar-brand-icon">
+      <img src="<?= $baseURL ?>assets/img/logo.png" style="width: 65px;" alt="">
     </div>
-    <div class="sidebar-brand-text mx-3"><?= $name_website ?></div>
   </a>
 
   <!-- Divider -->

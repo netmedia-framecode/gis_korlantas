@@ -59,6 +59,22 @@ function compressImage($source, $destination, $quality)
   return $destination;
 }
 
+function kontak($conn, $data, $action)
+{
+  if ($action == "insert") {
+    $sql = "INSERT INTO kontak(name,email,subject,message) VALUES('$data[nama]', '$data[email]', '$data[subject]', '$data[message]')";
+  }
+
+  if ($action == "update") {
+  }
+
+  if ($action == "delete") {
+  }
+
+  mysqli_query($conn, $sql);
+  return mysqli_affected_rows($conn);
+}
+
 if (!isset($_SESSION["project_gis_korlantas"]["users"])) {
   function register($conn, $data, $action)
   {
@@ -1397,31 +1413,11 @@ if (isset($_SESSION["project_gis_korlantas"]["users"])) {
 
   function laka($conn, $data, $action)
   {
-    $path = "../assets/img/laka/";
-
     if ($action == "insert") {
       $select_laka = "SELECT * FROM laka WHERE no_laka='$data[no_laka]'";
       $take_laka = mysqli_query($conn, $select_laka);
       if (mysqli_num_rows($take_laka) > 0) {
         $message = "Maaf, nomor laka yang anda masukan sudah ada.";
-        $message_type = "danger";
-        alert($message, $message_type);
-        return false;
-      }
-      $fileName = basename($_FILES["img_laka"]["name"]);
-      $fileName = str_replace(" ", "-", $fileName);
-      $fileName_encrypt = crc32($fileName);
-      $ekstensiGambar = explode('.', $fileName);
-      $ekstensiGambar = strtolower(end($ekstensiGambar));
-      $imageUploadPath = $path . $fileName_encrypt . "." . $ekstensiGambar;
-      $fileType = pathinfo($imageUploadPath, PATHINFO_EXTENSION);
-      $allowTypes = array('jpg', 'png', 'jpeg');
-      if (in_array($fileType, $allowTypes)) {
-        $imageTemp = $_FILES["img_laka"]["tmp_name"];
-        compressImage($imageTemp, $imageUploadPath, 75);
-        $img_laka = $fileName_encrypt . "." . $ekstensiGambar;
-      } else {
-        $message = "Maaf, hanya file gambar JPG, JPEG, dan PNG yang diizinkan.";
         $message_type = "danger";
         alert($message, $message_type);
         return false;
@@ -1445,17 +1441,13 @@ if (isset($_SESSION["project_gis_korlantas"]["users"])) {
         jumlah_meninggal,
         jumlah_luka_berat,
         jumlah_luka_ringan,
-        latitude,
-        longitude,
         titik_acuan,
         tipe_kecelakaan,
-        nama_jalan,
         batas_kecepatan_dilokasi,
         nilai_kerugian_non_kendaraan,
         nilai_kerugian_kendaraan,
         keterangan_kerugian,
-        jam_kejadian,
-        img_laka
+        jam_kejadian
       ) VALUES(
         '$data[id_informasi_khusus]',
         '$data[id_kondisi_cahaya]',
@@ -1475,16 +1467,13 @@ if (isset($_SESSION["project_gis_korlantas"]["users"])) {
         '$data[jumlah_meninggal]',
         '$data[jumlah_luka_berat]',
         '$data[jumlah_luka_ringan]',
-        '$data[latitude]',
-        '$data[longitude]',
         '$data[titik_acuan]',
         '$data[tipe_kecelakaan]',
         '$data[batas_kecepatan_dilokasi]',
         '$data[nilai_kerugian_non_kendaraan]',
         '$data[nilai_kerugian_kendaraan]',
         '$data[keterangan_kerugian]',
-        '$data[jam_kejadian]',
-        '$img_laka'
+        '$data[jam_kejadian]'
       )";
     }
 
@@ -1499,34 +1488,10 @@ if (isset($_SESSION["project_gis_korlantas"]["users"])) {
           return false;
         }
       }
-      if (!empty($_FILES['img_laka']["name"])) {
-        $fileName = basename($_FILES["img_laka"]["name"]);
-        $fileName = str_replace(" ", "-", $fileName);
-        $fileName_encrypt = crc32($fileName);
-        $ekstensiGambar = explode('.', $fileName);
-        $ekstensiGambar = strtolower(end($ekstensiGambar));
-        $imageUploadPath = $path . $fileName_encrypt . "." . $ekstensiGambar;
-        $fileType = pathinfo($imageUploadPath, PATHINFO_EXTENSION);
-        $allowTypes = array('jpg', 'png', 'jpeg');
-        if (in_array($fileType, $allowTypes)) {
-          $imageTemp = $_FILES["img_laka"]["tmp_name"];
-          compressImage($imageTemp, $imageUploadPath, 75);
-          $img_laka = $fileName_encrypt . "." . $ekstensiGambar;
-          unlink($path . $data['img_lakaOld']);
-        } else {
-          $message = "Maaf, hanya file gambar JPG, JPEG, dan PNG yang diizinkan.";
-          $message_type = "danger";
-          alert($message, $message_type);
-          return false;
-        }
-      } else if (empty($_FILE['img_laka']["name"])) {
-        $img_laka = $data['img_lakaOld'];
-      }
-      $sql = "UPDATE laka SET id_informasi_khusus='$data[id_informasi_khusus]', id_kondisi_cahaya='$data[id_kondisi_cahaya]', id_cuaca='$data[id_cuaca]', id_tingkat_kecelakaan='$data[id_tingkat_kecelakaan]', id_kecelakaan_menonjol='$data[id_kecelakaan_menonjol]', id_fungsi_jalan='$data[id_fungsi_jalan]', id_kelas_jalan='$data[id_kelas_jalan]', id_tipe_jalan='$data[id_tipe_jalan]', id_permukaan_jalan='$data[id_permukaan_jalan]', id_kemiringan_jalan='$data[id_kemiringan_jalan]', id_status_jalan='$data[id_status_jalan]', id_polres='$data[id_polres]', no_laka='$data[no_laka]', tanggal_kejadian='$data[tanggal_kejadian]', jumlah_meninggal='$data[jumlah_meninggal]', jumlah_luka_berat='$data[jumlah_luka_berat]', jumlah_luka_ringan='$data[jumlah_luka_ringan]', latitude='$data[latitude]', longitude='$data[longitude]', titik_acuan='$data[titik_acuan]', tipe_kecelakaan='$data[tipe_kecelakaan]', id_titik_rawan='$data[id_titik_rawan]', batas_kecepatan_dilokasi='$data[batas_kecepatan_dilokasi]', nilai_kerugian_non_kendaraan='$data[nilai_kerugian_non_kendaraan]', nilai_kerugian_kendaraan='$data[nilai_kerugian_kendaraan]', keterangan_kerugian='$data[keterangan_kerugian]', jam_kejadian='$data[jam_kejadian]', img_laka='$img_laka' WHERE id_laka='$data[id_laka]'";
+      $sql = "UPDATE laka SET id_informasi_khusus='$data[id_informasi_khusus]', id_kondisi_cahaya='$data[id_kondisi_cahaya]', id_cuaca='$data[id_cuaca]', id_tingkat_kecelakaan='$data[id_tingkat_kecelakaan]', id_kecelakaan_menonjol='$data[id_kecelakaan_menonjol]', id_fungsi_jalan='$data[id_fungsi_jalan]', id_kelas_jalan='$data[id_kelas_jalan]', id_tipe_jalan='$data[id_tipe_jalan]', id_permukaan_jalan='$data[id_permukaan_jalan]', id_kemiringan_jalan='$data[id_kemiringan_jalan]', id_status_jalan='$data[id_status_jalan]', id_polres='$data[id_polres]', no_laka='$data[no_laka]', tanggal_kejadian='$data[tanggal_kejadian]', jumlah_meninggal='$data[jumlah_meninggal]', jumlah_luka_berat='$data[jumlah_luka_berat]', jumlah_luka_ringan='$data[jumlah_luka_ringan]', titik_acuan='$data[titik_acuan]', tipe_kecelakaan='$data[tipe_kecelakaan]', id_titik_rawan='$data[id_titik_rawan]', batas_kecepatan_dilokasi='$data[batas_kecepatan_dilokasi]', nilai_kerugian_non_kendaraan='$data[nilai_kerugian_non_kendaraan]', nilai_kerugian_kendaraan='$data[nilai_kerugian_kendaraan]', keterangan_kerugian='$data[keterangan_kerugian]', jam_kejadian='$data[jam_kejadian]' WHERE id_laka='$data[id_laka]'";
     }
 
     if ($action == "delete") {
-      unlink($path . $data['img_laka']);
       $sql = "DELETE FROM laka WHERE id_laka='$data[id_laka]'";
     }
 
@@ -1608,6 +1573,104 @@ if (isset($_SESSION["project_gis_korlantas"]["users"])) {
     if ($action == "delete") {
       unlink($path . $data['img_titik_rawan']);
       $sql = "DELETE FROM titik_rawan WHERE id_titik_rawan='$data[id_titik_rawan]'";
+    }
+
+    mysqli_query($conn, $sql);
+    return mysqli_affected_rows($conn);
+  }
+
+  function pesan_kapolri($conn, $data, $action, $deskripsi)
+  {
+    $path = "../assets/img/pesan_kapolri/";
+
+    if ($action == "insert") {
+    }
+
+    if ($action == "update") {
+      if (!empty($_FILES['img_kapolri']["name"])) {
+        $fileName = basename($_FILES["img_kapolri"]["name"]);
+        $fileName = str_replace(" ", "-", $fileName);
+        $fileName_encrypt = crc32($fileName);
+        $ekstensiGambar = explode('.', $fileName);
+        $ekstensiGambar = strtolower(end($ekstensiGambar));
+        $imageUploadPath = $path . $fileName_encrypt . "." . $ekstensiGambar;
+        $fileType = pathinfo($imageUploadPath, PATHINFO_EXTENSION);
+        $allowTypes = array('jpg', 'png', 'jpeg');
+        if (in_array($fileType, $allowTypes)) {
+          $imageTemp = $_FILES["img_kapolri"]["tmp_name"];
+          compressImage($imageTemp, $imageUploadPath, 75);
+          $img_kapolri = $fileName_encrypt . "." . $ekstensiGambar;
+          unlink($path . $data['img_kapolriOld']);
+        } else {
+          $message = "Maaf, hanya file gambar JPG, JPEG, dan PNG yang diizinkan.";
+          $message_type = "danger";
+          alert($message, $message_type);
+          return false;
+        }
+      } else if (empty($_FILE['img_kapolri']["name"])) {
+        $img_kapolri = $data['img_kapolriOld'];
+      }
+      $sql = "UPDATE pesan_kapolri SET img_kapolri='$img_kapolri', deskripsi='$deskripsi', updated_at=current_timestamp";
+    }
+
+    if ($action == "delete") {
+    }
+
+    mysqli_query($conn, $sql);
+    return mysqli_affected_rows($conn);
+  }
+
+  function sejarah($conn, $data, $action, $deskripsi)
+  {
+    if ($action == "insert") {
+    }
+
+    if ($action == "update") {
+      $sql = "UPDATE sejarah SET deskripsi='$deskripsi', updated_at=current_timestamp";
+    }
+
+    if ($action == "delete") {
+    }
+
+    mysqli_query($conn, $sql);
+    return mysqli_affected_rows($conn);
+  }
+
+  function visi_misi($conn, $data, $action, $deskripsi)
+  {
+    $path = "../assets/img/visi_misi/";
+
+    if ($action == "insert") {
+    }
+
+    if ($action == "update") {
+      if (!empty($_FILES['img_vm']["name"])) {
+        $fileName = basename($_FILES["img_vm"]["name"]);
+        $fileName = str_replace(" ", "-", $fileName);
+        $fileName_encrypt = crc32($fileName);
+        $ekstensiGambar = explode('.', $fileName);
+        $ekstensiGambar = strtolower(end($ekstensiGambar));
+        $imageUploadPath = $path . $fileName_encrypt . "." . $ekstensiGambar;
+        $fileType = pathinfo($imageUploadPath, PATHINFO_EXTENSION);
+        $allowTypes = array('jpg', 'png', 'jpeg');
+        if (in_array($fileType, $allowTypes)) {
+          $imageTemp = $_FILES["img_vm"]["tmp_name"];
+          compressImage($imageTemp, $imageUploadPath, 75);
+          $img_vm = $fileName_encrypt . "." . $ekstensiGambar;
+          unlink($path . $data['img_vmOld']);
+        } else {
+          $message = "Maaf, hanya file gambar JPG, JPEG, dan PNG yang diizinkan.";
+          $message_type = "danger";
+          alert($message, $message_type);
+          return false;
+        }
+      } else if (empty($_FILE['img_vm']["name"])) {
+        $img_vm = $data['img_vmOld'];
+      }
+      $sql = "UPDATE visi_misi SET img_vm='$img_vm', deskripsi='$deskripsi', updated_at=current_timestamp";
+    }
+
+    if ($action == "delete") {
     }
 
     mysqli_query($conn, $sql);

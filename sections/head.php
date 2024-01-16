@@ -8,11 +8,12 @@
 <link rel="stylesheet" href="<?= $baseURL ?>assets/css/jquery.scrollbar.css">
 <link rel="stylesheet" href="<?= $baseURL ?>assets/css/style.css">
 <link rel="stylesheet" href="<?= $baseURL ?>assets/leaflet/leaflet.css">
-<script src="<?= $baseURL ?>assets/leaflet/leaflet.js"></script>
-<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
-<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+<link rel="icon" href="<?= $baseURL ?>assets/img/logo.png">
 
 <!-- Custom styles for this page -->
 <link href="<?= $baseURL ?>assets/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
 
-<title>GIS Korlantas</title>
+<!-- Custom styles for plugin -->
+<script src="<?= $baseURL ?>assets/sweetalert/dist/sweetalert2.all.min.js"></script>
+
+<title>Digital Satlantas</title>
