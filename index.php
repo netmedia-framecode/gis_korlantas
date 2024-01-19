@@ -40,8 +40,6 @@ $_SESSION["project_gis_korlantas"]["name_page"] = ""; ?>
             <!--Title-->
             <h1 class="mb-2">Digital Satlantas Polres Kupang Kota</h1>
             <!--Subtitle-->
-            <!--More properties button-->
-            <a href="lakalantas" class="ts-scroll btn-dark btn-sm d-none d-md-inline-block" data-bg-color="rgba(255,255,255,.3)">Lihat Kecelakaan</a>
           </div>
 
           <div class="col-sm-6 col-md-4">
