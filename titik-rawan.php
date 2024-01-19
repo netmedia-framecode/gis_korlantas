@@ -256,7 +256,23 @@ $_SESSION["project_gis_korlantas"]["name_page"] = "Pesan Kapolri"; ?>
                 </div>
               </section>
             <?php }
-            foreach ($views_titik_rawan_overview as $data) {
+            if (isset($_GET['place'])) {
+              $keyword = valid($conn, $_GET['place']);
+              $select_titik_rawan_overviews = "SELECT titik_rawan.*, SUM(laka.jumlah_luka_ringan) AS total_jumlah_luka_ringan, SUM(laka.jumlah_luka_berat) AS total_jumlah_luka_berat, SUM(laka.jumlah_meninggal) AS total_jumlah_meninggal, COUNT(laka.id_laka) AS total_laka, polres.nama_polres
+                                                FROM titik_rawan
+                                                LEFT JOIN laka ON laka.id_titik_rawan = titik_rawan.id_titik_rawan
+                                                LEFT JOIN polres ON laka.id_polres = polres.id_polres
+                                                WHERE titik_rawan.nama_jalan_rawan LIKE '%$keyword%'
+                                                GROUP BY titik_rawan.id_titik_rawan";
+            } else {
+              $select_titik_rawan_overviews = "SELECT titik_rawan.*, SUM(laka.jumlah_luka_ringan) AS total_jumlah_luka_ringan, SUM(laka.jumlah_luka_berat) AS total_jumlah_luka_berat, SUM(laka.jumlah_meninggal) AS total_jumlah_meninggal, COUNT(laka.id_laka) AS total_laka, polres.nama_polres
+                                                FROM titik_rawan
+                                                LEFT JOIN laka ON laka.id_titik_rawan = titik_rawan.id_titik_rawan
+                                                LEFT JOIN polres ON laka.id_polres = polres.id_polres
+                                                GROUP BY titik_rawan.id_titik_rawan";
+            }
+            $views_titik_rawan_overviews = mysqli_query($conn, $select_titik_rawan_overviews);
+            foreach ($views_titik_rawan_overviews as $data) {
               $id_titik_rawan = $data['id_titik_rawan']; ?>
               <div class="col-sm-6 col-lg-3">
                 <div class="card ts-item ts-card">

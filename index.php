@@ -47,26 +47,18 @@ $_SESSION["project_gis_korlantas"]["name_page"] = ""; ?>
           <div class="col-sm-6 col-md-4">
 
             <!--Form-->
-            <form method="post" class="ts-form py-3 px-4 ts-border-radius__md ts-shadow__md" data-bg-color="rgba(255,255,255,.9)">
+            <form method="get" action="titik-rawan" class="ts-form py-3 px-4 ts-border-radius__md ts-shadow__md" data-bg-color="rgba(255,255,255,.9)">
 
               <h4 class="mb-3">Cari Titik Kecelakaan</h4>
 
               <!--Keyword-->
               <div class="form-group my-2">
-                <input type="text" class="form-control" id="keyword" name="keyword" placeholder="Nama Jalan">
+                <input type="text" class="form-control" id="keyword" name="place" placeholder="Nama Jalan">
               </div>
-
-              <!--Status-->
-              <select class="custom-select my-2" id="status" name="status">
-                <option value="">Status</option>
-                <?php foreach ($views_tingkat_kecelakaan as $data) : ?>
-                  <option value="<?= $data['id_tingkat_kecelakaan'] ?>"><?= $data['tingkat_kecelakaan'] ?></option>
-                <?php endforeach; ?>
-              </select>
 
               <!--Submit button-->
               <div class="form-group my-2">
-                <button type="submit" name="cari-titik-rawan" class="btn btn-primary w-100" id="search-btn"><i class="fas fa-search"></i> Cari</button>
+                <button type="submit" class="btn btn-primary w-100" id="search-btn"><i class="fas fa-search"></i> Cari</button>
               </div>
 
             </form>

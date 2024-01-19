@@ -1,7 +1,7 @@
 <footer class="sticky-footer bg-white">
 <div class="container my-auto">
   <div class="copyright text-center my-auto">
-    <span>Copyright &copy; <a href="https://wasd.netmedia-framecode.com" class="text-decoration-none">WASD Netmedia Framecode</a> <?= date('Y') ?> | Develop by name_client</span>
+    <span>Copyright &copy; <a href="https://wasd.netmedia-framecode.com" class="text-decoration-none">WASD Netmedia Framecode</a> <?= date('Y') ?> | Develop by Muhammad Ardy</span>
   </div>
 </div>
 </footer>

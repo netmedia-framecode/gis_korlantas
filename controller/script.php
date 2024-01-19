@@ -54,13 +54,6 @@ $views_sejarah = mysqli_query($conn, $select_sejarah);
 $select_visi_misi = "SELECT * FROM visi_misi";
 $views_visi_misi = mysqli_query($conn, $select_visi_misi);
 
-if (isset($_POST['pencarian_kecelakaan'])) {
-  $nama_jalan = valid($conn, $_POST['keyword']);
-  $_SESSION["project_gis_korlantas"]["place"] = $nama_jalan;
-  header("Location: place");
-  exit();
-}
-
 if (isset($_POST["kontak"])) {
   $validated_post = array_map(function ($value) use ($conn) {
     return valid($conn, $value);
