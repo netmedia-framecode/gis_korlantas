@@ -47,7 +47,7 @@ if (isset($_SESSION["project_gis_korlantas"]["id_pemetaan"])) {
               <th class="text-center">Status Jalan</th>
               <th class="text-center">Nilai Kerugian Non Kendaraan</th>
               <th class="text-center">Nilai Kerugian Kendaraan</th>
-              <th class="text-center">Keterangan Kerugian</th>
+              <th class="text-center">Keterangan</th>
               <th class="text-center">Aksi</th>
             </tr>
           </thead>
@@ -76,7 +76,7 @@ if (isset($_SESSION["project_gis_korlantas"]["id_pemetaan"])) {
               <th class="text-center">Status Jalan</th>
               <th class="text-center">Nilai Kerugian Non Kendaraan</th>
               <th class="text-center">Nilai Kerugian Kendaraan</th>
-              <th class="text-center">Keterangan Kerugian</th>
+              <th class="text-center">Keterangan</th>
               <th class="text-center">Aksi</th>
             </tr>
           </tfoot>
@@ -415,7 +415,7 @@ if (isset($_SESSION["project_gis_korlantas"]["id_pemetaan"])) {
                                                                                           } ?>" class="form-control" id="nilai_kerugian_kendaraan" placeholder="">
                               </div>
                               <div class="form-group">
-                                <label for="keterangan_kerugian">Keterangan Kerugian</label>
+                                <label for="keterangan_kerugian">Keterangan</label>
                                 <input type="text" name="keterangan_kerugian" value="<?php if (isset($data['keterangan_kerugian'])) {
                                                                                         echo $data['keterangan_kerugian'];
                                                                                       } ?>" class="form-control" id="keterangan_kerugian" placeholder="">
@@ -766,7 +766,7 @@ if (isset($_SESSION["project_gis_korlantas"]["id_pemetaan"])) {
                                                                         } ?>" class="form-control" id="nilai_kerugian_kendaraan" placeholder="">
             </div>
             <div class="form-group">
-              <label for="keterangan_kerugian">Keterangan Kerugian</label>
+              <label for="keterangan_kerugian">Keterangan</label>
               <input type="text" name="keterangan_kerugian" value="<?php if (isset($_POST['keterangan_kerugian'])) {
                                                                       echo $_POST['keterangan_kerugian'];
                                                                     } ?>" class="form-control" id="keterangan_kerugian" placeholder="">

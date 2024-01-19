@@ -210,7 +210,7 @@ require_once("../templates/views_top.php"); ?>
                 <th class="text-center">Status Jalan</th>
                 <th class="text-center">Nilai Kerugian Non Kendaraan</th>
                 <th class="text-center">Nilai Kerugian Kendaraan</th>
-                <th class="text-center">Keterangan Kerugian</th>
+                <th class="text-center">Keterangan</th>
               </tr>
             </thead>
             <tfoot>
@@ -239,7 +239,7 @@ require_once("../templates/views_top.php"); ?>
                 <th class="text-center">Status Jalan</th>
                 <th class="text-center">Nilai Kerugian Non Kendaraan</th>
                 <th class="text-center">Nilai Kerugian Kendaraan</th>
-                <th class="text-center">Keterangan Kerugian</th>
+                <th class="text-center">Keterangan</th>
               </tr>
             </tfoot>
             <tbody>
